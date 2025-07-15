@@ -63,17 +63,10 @@ function App() {
   };
   return (
     <>
-      <div className="justify-between w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-5 rounded-2xl mt-5 flex">
+      <div className="justify-between w-11/12 md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-5 rounded-2xl mt-5 flex">
         <figure className="cursor-pointer">
           {" "}
           Todo List - Hector Dele Cruz Raposas
-        </figure>
-        <figure>
-          <ul className="flex gap-2 cursor-pointer">
-            <li>Profile</li>
-            <li>Projects</li>
-            <li>About</li>
-          </ul>
         </figure>
       </div>
       <div className="w-11/12 md:w-8/12 h-full mx-auto mt-5 p-5 rounded-2xl bg-white/30">
