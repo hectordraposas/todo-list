@@ -14,11 +14,12 @@ function App() {
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todoOutput));
     const totalSize = 4_885_000;
-    const rem = todoOutput
-      .map((t) => t.todo)
-      .join("")
-      .replace(/\s+/g, "").length;
-    setRemaining(() => ((totalSize - rem) / totalSize) * 100);
+    const remName = todoOutput.map((t) => t.todo).join("").length;
+    const remId = todoOutput.map((t) => t.id).join("").length;
+
+    const total = remName + remId;
+    console.log(total);
+    setRemaining(((totalSize - total) / totalSize) * 100);
   }, [todoOutput]);
 
   useEffect(() => {
@@ -27,10 +28,12 @@ function App() {
 
   const handlePostEdit = (id, todoName) => {
     if (editID === id) {
+      inputRef.current.focus();
       setEditId(null);
       setTodos("");
       setIsEditing((editState) => !editState);
     } else {
+      inputRef.current.focus();
       setIsEditing((editState) => !editState);
       setEditId(id);
       setTodos(todoName);
@@ -41,7 +44,7 @@ function App() {
     const newId = Date.now();
     if (!isEditing) {
       if (!todos) alert("Please enter todo");
-      else setTodoOutput([...todoOutput, { todo: addTodo, id: newId }]);
+      else setTodoOutput([{ todo: addTodo, id: newId }, ...todoOutput]);
       setTodos("");
       inputRef.current.focus();
     } else {
@@ -67,8 +70,9 @@ function App() {
         setEditId(null);
         setTodos("");
         setIsEditing((editState) => !editState);
-        console.log("Deleted");
+        inputRef.current.focus();
       } else {
+        inputRef.current.focus();
         setTodoOutput(itemDelete);
       }
     } else {
@@ -120,7 +124,7 @@ function App() {
                 } border-2 border-white/10 p-0.5  m-1 cursor-pointer first:mt-2`}
               >
                 <span className="flex items-center text-wrap">{item.todo}</span>
-                <hr className="border-t border-slate-500 my-2 w-full mx-auto" />
+                <hr className="border-t border-slate-50 my-2 w-full mx-auto" />
                 <span className="flex items-center justify-end">
                   <button
                     onClick={() => handlePostEdit(item.id, item.todo)}
