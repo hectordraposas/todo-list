@@ -1,23 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 
-const todoData = [
-  { id: 1, todo: "Wake Up early" },
-  { id: 2, todo: "Take Bath" },
-  { id: 3, todo: "Goto Bus waiting area" },
-];
-
 function App() {
   const inputRef = useRef(null);
+  const [todos, setTodos] = useState("");
+  const [editID, setEditId] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [remaining, setRemaining] = useState(0);
   const [todoOutput, setTodoOutput] = useState(() => {
     const storedValue = localStorage.getItem("todos");
     return storedValue ? JSON.parse(storedValue) : [];
   });
-  const [todos, setTodos] = useState("");
-  const [editID, setEditId] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todoOutput));
+    const totalSize = 4_885_000;
+    const rem = todoOutput
+      .map((t) => t.todo)
+      .join("")
+      .replace(/\s+/g, "").length;
+    setRemaining(() => ((totalSize - rem) / totalSize) * 100);
   }, [todoOutput]);
 
   useEffect(() => {
@@ -83,7 +84,12 @@ function App() {
       </div>
       <hr className="border-t border-gray-200 my-1 md:w-8/12 mx-auto" />
       <div className="w-full md:w-8/12 h-full mx-auto p-2 bg-white/30">
-        <p className="text-slate-50 mb-2">Todo Name</p>
+        <div className="flex justify-between">
+          <p className="text-slate-50 mb-2">Todo Name</p>
+          <p className="text-slate-50">
+            Remaining Storage : {remaining.toFixed(0)}%
+          </p>
+        </div>
         <div className="w-full">
           <input
             ref={inputRef}
@@ -107,23 +113,24 @@ function App() {
             {todoOutput.map((item, i) => (
               <li
                 key={item.id}
-                className={`flex justify-between ${
+                className={`flex justify-between flex-col ${
                   i % 2 === 0
                     ? " bg-white/80 text-green-500"
                     : "bg-white/50 text-green-600"
                 } border-2 border-white/10 p-0.5  m-1 cursor-pointer first:mt-2`}
               >
                 <span className="flex items-center text-wrap">{item.todo}</span>
-                <span className="flex gap-2 items-center">
+                <hr className="border-t border-slate-500 my-2 w-full mx-auto" />
+                <span className="flex items-center justify-end">
                   <button
                     onClick={() => handlePostEdit(item.id, item.todo)}
-                    className="bg-blue-400 text-slate-50 p-1 rounded-sm w-20 h-8"
+                    className="bg-blue-400 text-slate-50 p-1  md:w-30 w-full h-8"
                   >
                     {editID === item.id ? "Cancel" : "Edit"}
                   </button>
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="bg-red-500 text-slate-50 p-1 rounded-sm w-20 h-8"
+                    className="bg-red-600 text-slate-50 p-1 md:w-30 w-full h-8"
                   >
                     Delete
                   </button>
