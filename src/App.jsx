@@ -63,12 +63,13 @@ function App() {
   };
   return (
     <>
-      <div className="justify-between w-full md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-5 rounded-sm md:rounded-2xl mt-5 flex">
+      <div className="justify-between w-full md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-5 rounded-t-md mt-5 flex">
         <figure className="cursor-pointer">
           Todo List - Hector Dela Cruz Raposas
         </figure>
       </div>
-      <div className="w-full md:w-8/12 h-full mx-auto mt-5 p-2 bg-white/30">
+      <hr class="border-t border-gray-200 my-1 md:w-8/12 mx-auto" />
+      <div className="w-full md:w-8/12 h-full mx-auto p-2 bg-white/30">
         <p className="text-slate-50 mb-2">Todo Name</p>
         <div className="w-full">
           <input
@@ -115,7 +116,8 @@ function App() {
           </ul>
         </div>
       </div>
-      <div className="w-full md:w-8/12 mx-auto p-2 text-slate-50 bg-white/30 md:rounded-2xl mt-2 mb-5">
+      <hr class="border-t border-slate-50 my-1 md:w-8/12 mx-auto" />
+      <div className="w-full md:w-8/12 mx-auto p-2 text-slate-50 bg-white/30 rounded-b-md mb-5">
         <ul>
           <li>
             <div>
