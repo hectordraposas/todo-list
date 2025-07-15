@@ -63,22 +63,20 @@ function App() {
   };
   return (
     <>
-      <div className="justify-between w-11/12 md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-5 rounded-2xl mt-5 flex">
+      <div className="justify-between w-full md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-5 rounded-sm md:rounded-2xl mt-5 flex">
         <figure className="cursor-pointer">
-          {" "}
-          Todo List - Hector Dele Cruz Raposas
+          Todo List - Hector Dela Cruz Raposas
         </figure>
       </div>
-      <div className="w-11/12 md:w-8/12 h-full mx-auto mt-5 p-5 rounded-2xl bg-white/30">
+      <div className="w-full md:w-8/12 h-full mx-auto mt-5 p-2 bg-white/30">
         <p className="text-slate-50 mb-2">Todo Name</p>
         <div className="w-full">
           <input
             ref={inputRef}
             type="text"
             name=""
-            id=""
             placeholder="Enter todos..."
-            className="border-2 border-amber-600 rounded-2xl w-full p-2 text-slate-50"
+            className="border-2 border-amber-600 rounded-sm w-full p-2 text-slate-50"
             value={todos}
             onChange={(e) => setTodos(e.target.value)}
           />
@@ -95,7 +93,7 @@ function App() {
             {todoOutput.map((item) => (
               <li
                 key={item.id}
-                className="flex justify-between bg-white/80 border-2 border-white/10 p-1 rounded-sm text-green-500 m-1 cursor-pointer first:mt-2"
+                className="flex justify-between bg-white/80 border-2 border-white/10 p-0.5 text-green-500 m-1 cursor-pointer first:mt-2"
               >
                 <span className="flex items-center text-wrap">{item.todo}</span>
                 <span className="flex gap-2 items-center">
@@ -117,7 +115,7 @@ function App() {
           </ul>
         </div>
       </div>
-      <div className="w-11/12 md:w-8/12 mx-auto p-5 text-slate-50 bg-white/30 rounded-2xl mt-2 mb-5">
+      <div className="w-full md:w-8/12 mx-auto p-2 text-slate-50 bg-white/30 md:rounded-2xl mt-2 mb-5">
         <ul>
           <li>
             <div>
