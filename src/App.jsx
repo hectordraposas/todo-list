@@ -8,10 +8,17 @@ const todoData = [
 
 function App() {
   const inputRef = useRef(null);
-  const [todoOutput, setTodoOutput] = useState(todoData);
+  const [todoOutput, setTodoOutput] = useState(() => {
+    const storedValue = localStorage.getItem("todos");
+    return storedValue ? JSON.parse(storedValue) : [];
+  });
   const [todos, setTodos] = useState("");
   const [editID, setEditId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todoOutput));
+  }, [todoOutput]);
 
   useEffect(() => {
     inputRef.current.focus();
@@ -21,9 +28,9 @@ function App() {
     if (editID === id) {
       setEditId(null);
       setTodos("");
-      setIsEditing(!isEditing);
+      setIsEditing((editState) => !editState);
     } else {
-      setIsEditing(!isEditing);
+      setIsEditing((editState) => !editState);
       setEditId(id);
       setTodos(todoName);
     }
@@ -44,7 +51,7 @@ function App() {
       setTodoOutput(editItem);
       setEditId(null);
       setTodos("");
-      setIsEditing(!isEditing);
+      setIsEditing((editState) => !editState);
     }
   };
 
@@ -54,21 +61,27 @@ function App() {
     );
     if (confirm) {
       const itemDelete = todoOutput.filter((item) => item.id !== id);
-
-      setTodoOutput(itemDelete);
-      console.log("Deleted");
+      if (editID) {
+        setTodoOutput(itemDelete);
+        setEditId(null);
+        setTodos("");
+        setIsEditing((editState) => !editState);
+        console.log("Deleted");
+      } else {
+        setTodoOutput(itemDelete);
+      }
     } else {
       console.log("Not Deleted");
     }
   };
   return (
     <>
-      <div className="justify-between w-full md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-5 rounded-t-md mt-5 flex">
+      <div className="justify-between w-full md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-5 rounded-t-md flex">
         <figure className="cursor-pointer">
           Todo List - Hector Dela Cruz Raposas
         </figure>
       </div>
-      <hr class="border-t border-gray-200 my-1 md:w-8/12 mx-auto" />
+      <hr className="border-t border-gray-200 my-1 md:w-8/12 mx-auto" />
       <div className="w-full md:w-8/12 h-full mx-auto p-2 bg-white/30">
         <p className="text-slate-50 mb-2">Todo Name</p>
         <div className="w-full">
@@ -91,10 +104,14 @@ function App() {
           </div>
 
           <ul>
-            {todoOutput.map((item) => (
+            {todoOutput.map((item, i) => (
               <li
                 key={item.id}
-                className="flex justify-between bg-white/80 border-2 border-white/10 p-0.5 text-green-500 m-1 cursor-pointer first:mt-2"
+                className={`flex justify-between ${
+                  i % 2 === 0
+                    ? " bg-white/80 text-green-500"
+                    : "bg-white/50 text-green-600"
+                } border-2 border-white/10 p-0.5  m-1 cursor-pointer first:mt-2`}
               >
                 <span className="flex items-center text-wrap">{item.todo}</span>
                 <span className="flex gap-2 items-center">
@@ -116,7 +133,7 @@ function App() {
           </ul>
         </div>
       </div>
-      <hr class="border-t border-slate-50 my-1 md:w-8/12 mx-auto" />
+      <hr className="border-t border-slate-50 my-1 md:w-8/12 mx-auto" />
       <div className="w-full md:w-8/12 mx-auto p-2 text-slate-50 bg-white/30 rounded-b-md mb-5">
         <ul>
           <li>
