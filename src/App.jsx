@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 function App() {
   const inputRef = useRef(null);
+  const [isDone, setIsDone] = useState(false);
   const [todos, setTodos] = useState("");
   const [editID, setEditId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -18,7 +19,7 @@ function App() {
     const remId = todoOutput.map((t) => t.id).join("").length;
 
     const total = remName + remId;
-    console.log(total);
+
     setRemaining(((totalSize - total) / totalSize) * 100);
   }, [todoOutput]);
 
@@ -44,7 +45,11 @@ function App() {
     const newId = Date.now();
     if (!isEditing) {
       if (!todos) alert("Please enter todo");
-      else setTodoOutput([{ todo: addTodo, id: newId }, ...todoOutput]);
+      else
+        setTodoOutput([
+          { todo: addTodo, id: newId, done: true },
+          ...todoOutput,
+        ]);
       setTodos("");
       inputRef.current.focus();
     } else {
@@ -57,6 +62,14 @@ function App() {
       setTodos("");
       setIsEditing((editState) => !editState);
     }
+  };
+
+  const handleIsDone = (id) => {
+    const updateIsDone = todoOutput.map((item) =>
+      item.id === id ? { ...item, done: !item.done } : item
+    );
+
+    setTodoOutput(updateIsDone);
   };
 
   const handleDelete = (id) => {
@@ -123,7 +136,24 @@ function App() {
                     : "bg-white/50 text-green-600"
                 } border-2 border-white/10 p-0.5  m-1 cursor-pointer first:mt-2`}
               >
-                <span className="flex items-center text-wrap">{item.todo}</span>
+                <span className="flex items-center">
+                  <span className="mr-2.5 flex items-center">
+                    <input
+                      type="checkbox"
+                      value={item.done}
+                      onChange={() => handleIsDone(item.id)}
+                      checked={item.done}
+                    />
+                  </span>
+                  <span
+                    className={`${
+                      item.done ? "line-through font-semibold" : ""
+                    }`}
+                    onClick={() => handleIsDone(item.id)}
+                  >
+                    {item.todo}
+                  </span>
+                </span>
                 <hr className="border-t border-slate-50 my-2 w-full mx-auto" />
                 <span className="flex items-center justify-end">
                   <button
@@ -149,15 +179,18 @@ function App() {
         <ul>
           <li>
             <div>
-              👍This app is created using React Library, using only useState,
-              useEffect and useRef.
+              👍This app is created using React Library + Vite, with help of
+              differrent React hooks like useState, useEffect and useRef.
             </div>
           </li>
           <li>
-            <div>👍You can do Add, Edit and Deletion in the app.</div>
+            <div>👍Add, Edit and Deletion in the app.</div>
           </li>
           <li>
-            <div>👍This can track multiple states over the app.</div>
+            <div>👍Track multiple states over the app.</div>
+          </li>
+          <li>
+            <div>👍Localstorage for storing todos.</div>
           </li>
         </ul>
       </div>
