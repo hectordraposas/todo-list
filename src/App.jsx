@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 
 function App() {
   const inputRef = useRef(null);
-  const [isDone, setIsDone] = useState(false);
   const [todos, setTodos] = useState("");
   const [editID, setEditId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -32,10 +31,10 @@ function App() {
       inputRef.current.focus();
       setEditId(null);
       setTodos("");
-      setIsEditing((editState) => !editState);
+      setIsEditing(false);
     } else {
       inputRef.current.focus();
-      setIsEditing((editState) => !editState);
+      setIsEditing(true);
       setEditId(id);
       setTodos(todoName);
     }
@@ -53,14 +52,18 @@ function App() {
       setTodos("");
       inputRef.current.focus();
     } else {
-      const editItem = todoOutput.map((item) =>
-        item.id === editID ? { ...item, todo: todos } : item
-      );
+      if (todos) {
+        const editItem = todoOutput.map((item) =>
+          item.id === editID ? { ...item, todo: todos } : item
+        );
 
-      setTodoOutput(editItem);
-      setEditId(null);
-      setTodos("");
-      setIsEditing((editState) => !editState);
+        setTodoOutput(editItem);
+        setEditId(null);
+        setTodos("");
+        setIsEditing((editState) => !editState);
+      } else {
+        alert("Please dont update todo with empty string.");
+      }
     }
   };
 
@@ -82,7 +85,7 @@ function App() {
         setTodoOutput(itemDelete);
         setEditId(null);
         setTodos("");
-        setIsEditing((editState) => !editState);
+        setIsEditing(false);
         inputRef.current.focus();
       } else {
         inputRef.current.focus();
@@ -147,7 +150,9 @@ function App() {
                   </span>
                   <span
                     className={`${
-                      item.done ? "line-through font-semibold" : ""
+                      item.done
+                        ? "line-through font-semibold decoration-red-500"
+                        : ""
                     }`}
                     onClick={() => handleIsDone(item.id)}
                   >
