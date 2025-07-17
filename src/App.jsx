@@ -137,7 +137,6 @@ function App() {
         <figure className="cursor-pointer">Todo List</figure>
         <figure>
           <input type="text" placeholder="Search here..." className="p-1" />
-          <button className="cursor-pointer">🔍</button>
         </figure>
       </div>
       <hr className="border-t border-gray-200 my-1 md:w-8/12 mx-auto" />
