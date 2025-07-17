@@ -159,6 +159,7 @@ function App() {
                     : "bg-white/50 text-green-600"
                 } border-2 border-white/10 p-0.5  m-1 cursor-pointer first:mt-2`}
               >
+                <span>{calcTime(item.id)}</span>
                 <span className="flex items-center">
                   <span className="mr-2.5 flex items-center">
                     <input
@@ -169,6 +170,7 @@ function App() {
                     />
                   </span>
                   {/* //for content span side by side to creat time and date*/}
+
                   <span className="flex justify-between w-full">
                     <span
                       className={`${
@@ -180,7 +182,6 @@ function App() {
                     >
                       <span>{item.todo}</span>
                     </span>
-                    <span>{calcTime(item.id)}</span>
                   </span>
                 </span>
                 <hr className="border-t border-slate-50 my-2 w-full mx-auto" />
