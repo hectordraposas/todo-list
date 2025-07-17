@@ -8,6 +8,7 @@ function App() {
   const [remaining, setRemaining] = useState(0);
   const [message, setMessage] = useState("");
   const [messageColor, setMessageColor] = useState("");
+  const [lastKey, setLasKey] = useState(null);
   const [todoOutput, setTodoOutput] = useState(() => {
     const storedValue = localStorage.getItem("todos");
     return storedValue ? JSON.parse(storedValue) : [];
@@ -30,6 +31,21 @@ function App() {
 
     return "Just Now";
   };
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      setLasKey(e.key);
+      if (e.key === "Enter") {
+        handleAdd(todos);
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [todos]);
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todoOutput));
@@ -70,7 +86,7 @@ function App() {
   const handleAdd = (addTodo) => {
     const newId = Date.now();
     if (!isEditing) {
-      if (!todos) handleError("Please enter todos fist to save");
+      if (!todos) return handleError("Please enter todos first to save");
       else
         setTodoOutput([
           { todo: addTodo, id: newId, done: false },
@@ -136,7 +152,7 @@ function App() {
       <div className="justify-between w-full md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-2 rounded-t-md flex items-center">
         <figure className="cursor-pointer">Todo List</figure>
         <figure>
-          <input type="text" placeholder="Search here..." className="p-1" />
+          <input type="text" placeholder="Search here..." className="p-2" />
         </figure>
       </div>
       <hr className="border-t border-gray-200 my-1 md:w-8/12 mx-auto" />
@@ -166,6 +182,12 @@ function App() {
               {isEditing ? "Update" : "Save"}
             </button>
           </div>
+
+          {todoOutput.length === 0 && (
+            <span className="text-blue-400">
+              No todos loaded from LocalStorage please add one.
+            </span>
+          )}
 
           <ul>
             {todoOutput.map((item, i) => (
