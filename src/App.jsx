@@ -6,10 +6,30 @@ function App() {
   const [editID, setEditId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [remaining, setRemaining] = useState(0);
+  const [tempOutput, setTempOutput] = useState([]);
+  const [search, setSearch] = useState("");
   const [todoOutput, setTodoOutput] = useState(() => {
     const storedValue = localStorage.getItem("todos");
     return storedValue ? JSON.parse(storedValue) : [];
   });
+
+  const calcTime = (time) => {
+    const today = Date.now();
+
+    const diffTime = today - time;
+
+    const seconds = Math.floor(diffTime / 1000);
+    const minutes = Math.floor(diffTime / (1000 * 60));
+    const hours = Math.floor(diffTime / (1000 * 60 * 60));
+    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    if (seconds > 0) return `${seconds} second${seconds > 1 ? "s" : ""} ago`;
+
+    return "Just Now";
+  };
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todoOutput));
@@ -46,7 +66,7 @@ function App() {
       if (!todos) alert("Please enter todo");
       else
         setTodoOutput([
-          { todo: addTodo, id: newId, done: true },
+          { todo: addTodo, id: newId, done: false },
           ...todoOutput,
         ]);
       setTodos("");
@@ -148,15 +168,19 @@ function App() {
                       checked={item.done}
                     />
                   </span>
-                  <span
-                    className={`${
-                      item.done
-                        ? "line-through font-semibold decoration-red-500"
-                        : ""
-                    }`}
-                    onClick={() => handleIsDone(item.id)}
-                  >
-                    {item.todo}
+                  {/* //for content span side by side to creat time and date*/}
+                  <span className="flex justify-between w-full">
+                    <span
+                      className={`${
+                        item.done
+                          ? "line-through font-semibold decoration-red-500"
+                          : ""
+                      }`}
+                      onClick={() => handleIsDone(item.id)}
+                    >
+                      <span>{item.todo}</span>
+                    </span>
+                    <span>{calcTime(item.id)}</span>
                   </span>
                 </span>
                 <hr className="border-t border-slate-50 my-2 w-full mx-auto" />
