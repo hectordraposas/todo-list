@@ -6,8 +6,8 @@ function App() {
   const [editID, setEditId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [remaining, setRemaining] = useState(0);
-  const [tempOutput, setTempOutput] = useState([]);
-  const [search, setSearch] = useState("");
+  const [message, setMessage] = useState("");
+  const [messageColor, setMessageColor] = useState("");
   const [todoOutput, setTodoOutput] = useState(() => {
     const storedValue = localStorage.getItem("todos");
     return storedValue ? JSON.parse(storedValue) : [];
@@ -60,10 +60,17 @@ function App() {
     }
   };
 
+  const handleError = (error = "", color = "text-red-500") => {
+    setMessage(error);
+    setMessageColor(color);
+
+    setTimeout(() => setMessage(""), 2000);
+  };
+
   const handleAdd = (addTodo) => {
     const newId = Date.now();
     if (!isEditing) {
-      if (!todos) alert("Please enter todo");
+      if (!todos) handleError("Please enter todos fist to save");
       else
         setTodoOutput([
           { todo: addTodo, id: newId, done: false },
@@ -71,6 +78,7 @@ function App() {
         ]);
       setTodos("");
       inputRef.current.focus();
+      handleError("Successfully saved!", "text-blue-500");
     } else {
       if (todos) {
         const editItem = todoOutput.map((item) =>
@@ -81,8 +89,12 @@ function App() {
         setEditId(null);
         setTodos("");
         setIsEditing((editState) => !editState);
+        handleError("Successfully updated", "text-green-600");
       } else {
-        alert("Please dont update todo with empty string.");
+        handleError(
+          "Please dont update todo with empty string.",
+          "text-red-500"
+        );
       }
     }
   };
@@ -107,9 +119,13 @@ function App() {
         setTodos("");
         setIsEditing(false);
         inputRef.current.focus();
+        handleError("Item successfully deleted");
       } else {
+        setTodos("");
+        setIsEditing(false);
         inputRef.current.focus();
         setTodoOutput(itemDelete);
+        handleError("Item successfully deleted");
       }
     } else {
       console.log("Not Deleted");
@@ -117,9 +133,11 @@ function App() {
   };
   return (
     <>
-      <div className="justify-between w-full md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-5 rounded-t-md flex">
-        <figure className="cursor-pointer">
-          Todo List - Hector Dela Cruz Raposas
+      <div className="justify-between w-full md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-2 rounded-t-md flex items-center">
+        <figure className="cursor-pointer">Todo List</figure>
+        <figure>
+          <input type="text" placeholder="Search here..." className="p-1" />
+          <button className="cursor-pointer">🔍</button>
         </figure>
       </div>
       <hr className="border-t border-gray-200 my-1 md:w-8/12 mx-auto" />
@@ -140,10 +158,11 @@ function App() {
             value={todos}
             onChange={(e) => setTodos(e.target.value)}
           />
-          <div className="relative w-full h-12">
+          <div className="flex justify-between relative w-full pt-2">
+            <span className={messageColor}>{message}</span>
             <button
               onClick={() => handleAdd(todos)}
-              className="text-green-500 bg-white/50 w-50 p-2 rounded-2xl cursor-pointer right-1 mt-2 absolute"
+              className="text-green-500 bg-white/50 w-50 p-1 rounded-2xl cursor-pointer h-10"
             >
               {isEditing ? "Update" : "Save"}
             </button>
@@ -208,10 +227,10 @@ function App() {
       <div className="w-full md:w-8/12 mx-auto p-2 text-slate-50 bg-white/30 rounded-b-md mb-5">
         <ul>
           <li>
-            <div>
-              👍This app is created using React Library + Vite, with help of
-              differrent React hooks like useState, useEffect and useRef.
-            </div>
+            <div>👍This app is created using React Library + Vite.</div>
+          </li>
+          <li>
+            <div>👍Use react hooks like useState, useEffect and useRef.</div>
           </li>
           <li>
             <div>👍Add, Edit and Deletion in the app.</div>
@@ -221,6 +240,9 @@ function App() {
           </li>
           <li>
             <div>👍Localstorage for storing todos.</div>
+          </li>
+          <li>
+            <div>👍Date and date computation.</div>
           </li>
         </ul>
       </div>
