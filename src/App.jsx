@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+const tempData = [{ todo: "hellow", id: 1752778472650, done: false }];
+
 function App() {
   const inputRef = useRef(null);
   const [todos, setTodos] = useState("");
@@ -9,6 +11,8 @@ function App() {
   const [message, setMessage] = useState("");
   const [messageColor, setMessageColor] = useState("");
   const [lastKey, setLasKey] = useState(null);
+  const [search, setSearch] = useState("");
+  const [tempSearchData, setTempSearchData] = useState([]);
   const [todoOutput, setTodoOutput] = useState(() => {
     const storedValue = localStorage.getItem("todos");
     return storedValue ? JSON.parse(storedValue) : [];
@@ -23,7 +27,13 @@ function App() {
     const minutes = Math.floor(diffTime / (1000 * 60));
     const hours = Math.floor(diffTime / (1000 * 60 * 60));
     const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
 
+    if (years > 0) return `${years} year${years > 1 ? "s" : ""} ago`;
+    if (months > 0) return `${months} month${months > 1 ? "s" : ""} ago`;
+    if (weeks > 0) return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
     if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
     if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
     if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
@@ -120,7 +130,12 @@ function App() {
       item.id === id ? { ...item, done: !item.done } : item
     );
 
+    const updateTempIsDone = tempSearchData.map((item) =>
+      item.id === id ? { ...item, done: !item.done } : item
+    );
+
     setTodoOutput(updateIsDone);
+    setTempSearchData(updateTempIsDone);
   };
 
   const handleDelete = (id) => {
@@ -147,12 +162,27 @@ function App() {
       console.log("Not Deleted");
     }
   };
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+    const searchData = todoOutput.filter((item) =>
+      item.todo.toLowerCase().includes(search.toLowerCase())
+    );
+
+    setTempSearchData(searchData);
+  };
   return (
     <>
       <div className="justify-between w-full md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-2 rounded-t-md flex items-center">
         <figure className="cursor-pointer">Todo List</figure>
         <figure>
-          <input type="text" placeholder="Search here..." className="p-2" />
+          <input
+            type="text"
+            value={search}
+            onChange={handleSearch}
+            placeholder="Search here..."
+            className="p-2"
+          />
         </figure>
       </div>
       <hr className="border-t border-gray-200 my-1 md:w-8/12 mx-auto" />
@@ -190,57 +220,59 @@ function App() {
           )}
 
           <ul>
-            {todoOutput.map((item, i) => (
-              <li
-                key={item.id}
-                className={`flex justify-between flex-col ${
-                  i % 2 === 0
-                    ? " bg-white/80 text-green-500"
-                    : "bg-white/50 text-green-600"
-                } border-2 border-white/10 p-0.5  m-1 cursor-pointer first:mt-2`}
-              >
-                <span>{calcTime(item.id)}</span>
-                <span className="flex items-center">
-                  <span className="mr-2.5 flex items-center">
-                    <input
-                      type="checkbox"
-                      value={item.done}
-                      onChange={() => handleIsDone(item.id)}
-                      checked={item.done}
-                    />
-                  </span>
-                  {/* //for content span side by side to creat time and date*/}
+            {(search.length > 0 ? tempSearchData : todoOutput).map(
+              (item, i) => (
+                <li
+                  key={item.id}
+                  className={`flex justify-between flex-col ${
+                    i % 2 === 0
+                      ? " bg-white/80 text-green-500"
+                      : "bg-white/50 text-green-600"
+                  } border-2 border-white/10 p-0.5  m-1 cursor-pointer first:mt-2`}
+                >
+                  <span>{calcTime(item.id)}</span>
+                  <span className="flex items-center">
+                    <span className="mr-2.5 flex items-center">
+                      <input
+                        type="checkbox"
+                        value={item.done}
+                        onChange={() => handleIsDone(item.id)}
+                        checked={item.done}
+                      />
+                    </span>
+                    {/* //for content span side by side to creat time and date*/}
 
-                  <span className="flex justify-between w-full">
-                    <span
-                      className={`${
-                        item.done
-                          ? "line-through font-semibold decoration-red-500"
-                          : ""
-                      }`}
-                      onClick={() => handleIsDone(item.id)}
-                    >
-                      <span>{item.todo}</span>
+                    <span className="flex justify-between w-full">
+                      <span
+                        className={`${
+                          item.done
+                            ? "line-through font-semibold decoration-red-500"
+                            : ""
+                        }`}
+                        onClick={() => handleIsDone(item.id)}
+                      >
+                        <span>{item.todo}</span>
+                      </span>
                     </span>
                   </span>
-                </span>
-                <hr className="border-t border-slate-50 my-2 w-full mx-auto" />
-                <span className="flex items-center justify-end">
-                  <button
-                    onClick={() => handlePostEdit(item.id, item.todo)}
-                    className="bg-blue-400 text-slate-50 p-1  md:w-30 w-full h-8"
-                  >
-                    {editID === item.id ? "Cancel" : "Edit"}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="bg-red-600 text-slate-50 p-1 md:w-30 w-full h-8"
-                  >
-                    Delete
-                  </button>
-                </span>
-              </li>
-            ))}
+                  <hr className="border-t border-slate-50 my-2 w-full mx-auto" />
+                  <span className="flex items-center justify-end">
+                    <button
+                      onClick={() => handlePostEdit(item.id, item.todo)}
+                      className="bg-blue-400 text-slate-50 p-1  md:w-30 w-full h-8"
+                    >
+                      {editID === item.id ? "Cancel" : "Edit"}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="bg-red-600 text-slate-50 p-1 md:w-30 w-full h-8"
+                    >
+                      Delete
+                    </button>
+                  </span>
+                </li>
+              )
+            )}
           </ul>
         </div>
       </div>
