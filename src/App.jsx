@@ -1,8 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import NavigationComponent from "./components/navigation/NavigationComponent";
+import ListItemComponent from "./components/navigation/ListItemComponent";
+import InputTodosComponent from "./components/navigation/InputTodosComponent";
+import RemainingStorageComponent from "./components/navigation/RemainingStorageComponent";
+import AppInfoComponent from "./components/navigation/AppInfoComponent";
 
 const tempData = [{ todo: "hellow", id: 1752778472650, done: false }];
 
 function App() {
+  //states
   const inputRef = useRef(null);
   const [todos, setTodos] = useState("");
   const [editID, setEditId] = useState("");
@@ -17,7 +23,7 @@ function App() {
     const storedValue = localStorage.getItem("todos");
     return storedValue ? JSON.parse(storedValue) : [];
   });
-
+  //calculates the date
   const calcTime = (time) => {
     const today = Date.now();
 
@@ -42,6 +48,8 @@ function App() {
     return "Just Now";
   };
 
+  //this handle the enter key listener
+
   useEffect(() => {
     const handleKey = (e) => {
       setLasKey(e.key);
@@ -57,6 +65,7 @@ function App() {
     };
   }, [todos]);
 
+  //this handles the total todos the localstorage can store
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todoOutput));
     const totalSize = 4_885_000;
@@ -71,7 +80,9 @@ function App() {
   useEffect(() => {
     inputRef.current.focus();
   }, []);
-
+  //handling the edit
+  //post edit because there is so much happening when clicking the edit button
+  //update the ui button name checking if where editing or adding
   const handlePostEdit = (id, todoName) => {
     if (editID === id) {
       inputRef.current.focus();
@@ -85,14 +96,14 @@ function App() {
       setTodos(todoName);
     }
   };
-
+  //handling error
   const handleError = (error = "", color = "text-red-500") => {
     setMessage(error);
     setMessageColor(color);
 
     setTimeout(() => setMessage(""), 2000);
   };
-
+  //this handle that add todos
   const handleAdd = (addTodo) => {
     const newId = Date.now();
     if (!isEditing) {
@@ -112,6 +123,7 @@ function App() {
         );
 
         setTodoOutput(editItem);
+        setTempSearchData(editItem);
         setEditId(null);
         setTodos("");
         setIsEditing((editState) => !editState);
@@ -124,7 +136,9 @@ function App() {
       }
     }
   };
-
+  //this handles the checkbox
+  //if the user want to make the todo done or not
+  //simple compairing using filter
   const handleIsDone = (id) => {
     const updateIsDone = todoOutput.map((item) =>
       item.id === id ? { ...item, done: !item.done } : item
@@ -137,7 +151,12 @@ function App() {
     setTodoOutput(updateIsDone);
     setTempSearchData(updateTempIsDone);
   };
-
+  //handling deletion
+  // first creating a alert confirm button
+  // asking the user to delete the data
+  //then if yes  then delete happen
+  // updating the ui
+  //set all the state to their default state
   const handleDelete = (id) => {
     const confirm = window.confirm(
       "are you sure you want to delete this data?"
@@ -162,7 +181,7 @@ function App() {
       console.log("Not Deleted");
     }
   };
-
+  // searching todos
   const handleSearch = (e) => {
     setSearch(e.target.value);
     const searchData = todoOutput.filter((item) =>
@@ -173,132 +192,37 @@ function App() {
   };
   return (
     <>
-      <div className="justify-between w-full md:w-8/12 h-full bg-white/30 text-slate-50 mx-auto p-2 rounded-t-md flex items-center">
-        <figure className="cursor-pointer">Todo List</figure>
-        <figure>
-          <input
-            type="text"
-            value={search}
-            onChange={handleSearch}
-            placeholder="Search here..."
-            className="p-2"
-          />
-        </figure>
-      </div>
+      <NavigationComponent handleSearch={handleSearch} search={search} />
       <hr className="border-t border-gray-200 my-1 md:w-8/12 mx-auto" />
+
       <div className="w-full md:w-8/12 h-full mx-auto p-2 bg-white/30">
-        <div className="flex justify-between">
-          <p className="text-slate-50 mb-2">Todo Name</p>
-          <p className="text-slate-50">
-            Remaining Storage : {remaining.toFixed(0)}%
-          </p>
-        </div>
+        <RemainingStorageComponent remaining={remaining} />
         <div className="w-full">
-          <input
-            ref={inputRef}
-            type="text"
-            name=""
-            placeholder="Enter todos..."
-            className="border-2 border-amber-600 rounded-sm w-full p-2 text-slate-50"
-            value={todos}
-            onChange={(e) => setTodos(e.target.value)}
+          <InputTodosComponent
+            inputRef={inputRef}
+            todos={todos}
+            setTodos={setTodos}
+            message={message}
+            messageColor={messageColor}
+            handleAdd={handleAdd}
+            isEditing={isEditing}
           />
-          <div className="flex justify-between relative w-full pt-2">
-            <span className={messageColor}>{message}</span>
-            <button
-              onClick={() => handleAdd(todos)}
-              className="text-green-500 bg-white/50 w-50 p-1 rounded-2xl cursor-pointer h-10"
-            >
-              {isEditing ? "Update" : "Save"}
-            </button>
-          </div>
 
-          {todoOutput.length === 0 && (
-            <span className="text-blue-400">
-              No todos loaded from LocalStorage please add one.
-            </span>
-          )}
-
-          <ul>
-            {(search.length > 0 ? tempSearchData : todoOutput).map(
-              (item, i) => (
-                <li
-                  key={item.id}
-                  className={`flex justify-between flex-col ${
-                    i % 2 === 0
-                      ? " bg-white/80 text-green-500"
-                      : "bg-white/50 text-green-600"
-                  } border-2 border-white/10 p-0.5  m-1 cursor-pointer first:mt-2`}
-                >
-                  <span>{calcTime(item.id)}</span>
-                  <span className="flex items-center">
-                    <span className="mr-2.5 flex items-center">
-                      <input
-                        type="checkbox"
-                        value={item.done}
-                        onChange={() => handleIsDone(item.id)}
-                        checked={item.done}
-                      />
-                    </span>
-                    {/* //for content span side by side to creat time and date*/}
-
-                    <span className="flex justify-between w-full">
-                      <span
-                        className={`${
-                          item.done
-                            ? "line-through font-semibold decoration-red-500"
-                            : ""
-                        }`}
-                        onClick={() => handleIsDone(item.id)}
-                      >
-                        <span>{item.todo}</span>
-                      </span>
-                    </span>
-                  </span>
-                  <hr className="border-t border-slate-50 my-2 w-full mx-auto" />
-                  <span className="flex items-center justify-end">
-                    <button
-                      onClick={() => handlePostEdit(item.id, item.todo)}
-                      className="bg-blue-400 text-slate-50 p-1  md:w-30 w-full h-8"
-                    >
-                      {editID === item.id ? "Cancel" : "Edit"}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="bg-red-600 text-slate-50 p-1 md:w-30 w-full h-8"
-                    >
-                      Delete
-                    </button>
-                  </span>
-                </li>
-              )
-            )}
-          </ul>
+          <ListItemComponent
+            handleSearch={handleSearch}
+            search={search}
+            tempSearchData={tempSearchData}
+            todoOutput={todoOutput}
+            calcTime={calcTime}
+            handleIsDone={handleIsDone}
+            handlePostEdit={handlePostEdit}
+            handleDelete={handleDelete}
+            editID={editID}
+          />
         </div>
       </div>
       <hr className="border-t border-slate-50 my-1 md:w-8/12 mx-auto" />
-      <div className="w-full md:w-8/12 mx-auto p-2 text-slate-50 bg-white/30 rounded-b-md mb-5">
-        <ul>
-          <li>
-            <div>👍This app is created using React Library + Vite.</div>
-          </li>
-          <li>
-            <div>👍Use react hooks like useState, useEffect and useRef.</div>
-          </li>
-          <li>
-            <div>👍Add, Edit and Deletion in the app.</div>
-          </li>
-          <li>
-            <div>👍Track multiple states over the app.</div>
-          </li>
-          <li>
-            <div>👍Localstorage for storing todos.</div>
-          </li>
-          <li>
-            <div>👍Date and date computation.</div>
-          </li>
-        </ul>
-      </div>
+      <AppInfoComponent />
     </>
   );
 }
